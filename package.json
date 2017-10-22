@@ -4,13 +4,15 @@
   "description": "Application, which tells you how much water should you drink",
   "main": "index.js",
   "scripts": {
-    "start" : "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon server.js",
+    "test": "mocha tests --recursive"
   },
   "author": "Yevhenii Kubiuk",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^1.12.1"
+    "chai": "^4.1.2",
+    "nodemon": "^1.12.1",
+    "supertest": "^3.0.0"
   },
   "dependencies": {
     "express": "^4.16.2"
