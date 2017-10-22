@@ -1,0 +1,18 @@
+{
+  "name": "aqua",
+  "version": "1.0.0",
+  "description": "Application, which tells you how much water should you drink",
+  "main": "index.js",
+  "scripts": {
+    "start" : "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yevhenii Kubiuk",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.12.1"
+  },
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
