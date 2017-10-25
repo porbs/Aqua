@@ -11,5 +11,8 @@ exports.processInfo = function(req, res) {
   }else {
     res.status(200).json(validParams);
   }
-
 };
+
+exports.getSchema = function (req, res) {
+  res.status(200).json(processor.stats);
+}

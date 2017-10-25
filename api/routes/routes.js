@@ -4,4 +4,7 @@ module.exports = function(app) {
 
   app.route('/calculate')
     .post(aqua.processInfo);
+
+  app.route('/schema')
+    .get(aqua.getSchema);
 };

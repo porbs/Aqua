@@ -54,7 +54,7 @@ describe('Params Validation Tests', function() {
   });
 });
 
-describe('API Tests', function () {
+describe('API Tests: processInfo', function () {
    it('Should return 400 Bad Request if required were not passed', function (done) {
       request(serverURL)
          .post('/calculate')
@@ -93,4 +93,35 @@ describe('API Tests', function () {
            done();
          });
    });
+});
+
+describe('API Tests: getSchema',function () {
+  it('Should return 200 OK', function(done){
+    request(serverURL)
+       .get('/schema')
+       .end(function(err, res) {
+         expect(res.status).to.be.equal(200);
+         done();
+       });
+  });
+
+  it('Should return json array', function(done){
+    request(serverURL)
+       .get('/schema')
+       .end(function(err, res) {
+         expect(res.body)
+         .to.be.an('array');
+         done();
+       });
+  });
+
+  it('Should return json array with objects having name, requierd and description properties ', function(done){
+    request(serverURL)
+       .get('/schema')
+       .end(function(err, res) {
+         expect(res.body[0])
+         .to.have.all.keys('name', 'required', 'description');
+         done();
+       });
+  });
 });
