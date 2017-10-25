@@ -20,26 +20,77 @@ describe('Processor Tests', function() {
          .to.have.a.property('weight', 1337);
    });
 
+   it('Should return true if at least required params were passed ', function () {
+     expect(processor.checkForRequired({notRequired : 1, weight : 2}))
+      .to.be.equal(true);
+   });
+
+});
+
+describe('Params Validation Tests', function() {
+  it('Should return NaN if not a number', function () {
+    expect(processor.uFloatValidation('hello'))
+    .to.be.NaN;
+  });
+  it('Should return NaN if not a number', function () {
+    expect(processor.uIntegerValidation('hello'))
+    .to.be.NaN;
+  });
+  it('Should return number if Unsigned Integer passed', function () {
+    expect(processor.uIntegerValidation(123))
+    .to.be.equal(123);
+  });
+  it('Should return number if Unsigned Float passed', function () {
+    expect(processor.uFloatValidation(123.12345))
+    .to.be.equal(123.12345);
+  });
+  it('Should return NaN if passed value < 0', function () {
+    expect(processor.uIntegerValidation(-123))
+    .to.be.NaN;
+  });
+  it('Should return NaN if passed value < 0', function () {
+    expect(processor.uFloatValidation(-123.00))
+    .to.be.NaN;
+  });
 });
 
 describe('API Tests', function () {
-   it('Should return 400 Bad Request if valid params or required were not passed', function () {
+   it('Should return 400 Bad Request if required were not passed', function (done) {
       request(serverURL)
-         .get('/calculate/{"notValid" : 1}')
-         .expect(400)
-         .then(response => {
-            expect(response.body).to.be.empty;
-      });
-   });
-
-   it('Should return 200 OK and json response if at least required params were passed', function () {
-      request(serverURL)
-         .get('/calculate/{"notValid" : 1, "weight": 1337}')
-         .expect(200)
-         .then(response => {
-            expect(response.body)
-            .to.be.eql({weight : 1337});
+         .post('/calculate')
+         .type('json')
+         .send({notValid : 0})
+         .set('Content-Type', 'application/json')
+         .set('Accept', 'application/json')
+         .end(function (err, res) {
+           expect(res.status).to.be.equal(400);
+           done();
          });
    });
 
-})
+   it('Should return json in response body if at least required params were passed', function (done) {
+      request(serverURL)
+         .post('/calculate')
+         .type('json')
+         .send({weight : 1337, notValid : 0})
+         .set('Content-Type', 'application/json')
+         .set('Accept', 'application/json')
+         .end(function(err, res) {
+           expect(res.body).to.be.eql({weight : 1337});
+           done();
+         });
+   });
+
+   it('Should return 200 OK status if at least required params were passed', function (done) {
+      request(serverURL)
+         .post('/calculate')
+         .type('json')
+         .send({weight : 1337})
+         .set('Content-Type', 'application/json')
+         .set('Accept', 'application/json')
+         .end(function(err, res) {
+           expect(res.status).to.be.equal(200);
+           done();
+         });
+   });
+});
