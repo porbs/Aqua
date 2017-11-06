@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "mocha tests --recursive"
+    "test": "mocha tests --recursive --watch"
   },
   "author": "Yevhenii Kubiuk",
   "license": "ISC",
