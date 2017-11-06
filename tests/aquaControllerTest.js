@@ -4,6 +4,7 @@ var processor = require('./../api/controllers/processor');
 var request = require('supertest');
 
 var serverURL = 'localhost:3000';
+var DEFAULT_TIMEOUT = 10000;
 
 describe('Processor Tests', function() {
   it('Should return an empty object if valid params were not found',
@@ -25,13 +26,19 @@ describe('Processor Tests', function() {
       .to.be.equal(true);
    });
 
+   it('Should return NaN if params\' value validation was failed', function () {
+     expect(processor.calculateWaterAmount({weight : 123, sportActivity : "notValid"}))
+     .to.be.eql('NaN');
+   });
+
+   it('Should return number if all passed valid params', function () {
+     expect(processor.calculateWaterAmount({weight : 100, sportActivity : 1}))
+     .to.be.equal('3.4');
+   });
+
 });
 
 describe('Params Validation Tests', function() {
-  it('Should return NaN if not a number', function () {
-    expect(processor.uFloatValidation('hello'))
-    .to.be.NaN;
-  });
   it('Should return NaN if not a number', function () {
     expect(processor.uIntegerValidation('hello'))
     .to.be.NaN;
@@ -40,22 +47,15 @@ describe('Params Validation Tests', function() {
     expect(processor.uIntegerValidation(123))
     .to.be.equal(123);
   });
-  it('Should return number if Unsigned Float passed', function () {
-    expect(processor.uFloatValidation(123.12345))
-    .to.be.equal(123.12345);
-  });
   it('Should return NaN if passed value < 0', function () {
     expect(processor.uIntegerValidation(-123))
-    .to.be.NaN;
-  });
-  it('Should return NaN if passed value < 0', function () {
-    expect(processor.uFloatValidation(-123.00))
     .to.be.NaN;
   });
 });
 
 describe('API Tests: processInfo', function () {
    it('Should return 400 Bad Request if required were not passed', function (done) {
+     this.timeout(DEFAULT_TIMEOUT);
       request(serverURL)
          .post('/calculate')
          .type('json')
@@ -68,20 +68,8 @@ describe('API Tests: processInfo', function () {
          });
    });
 
-   it('Should return json in response body if at least required params were passed', function (done) {
-      request(serverURL)
-         .post('/calculate')
-         .type('json')
-         .send({weight : 1337, notValid : 0})
-         .set('Content-Type', 'application/json')
-         .set('Accept', 'application/json')
-         .end(function(err, res) {
-           expect(res.body).to.be.eql({weight : 1337});
-           done();
-         });
-   });
-
    it('Should return 200 OK status if at least required params were passed', function (done) {
+     this.timeout(DEFAULT_TIMEOUT);
       request(serverURL)
          .post('/calculate')
          .type('json')
@@ -96,6 +84,7 @@ describe('API Tests: processInfo', function () {
 });
 
 describe('API Tests: getSchema',function () {
+  this.timeout(DEFAULT_TIMEOUT);
   it('Should return 200 OK', function(done){
     request(serverURL)
        .get('/schema')
@@ -106,6 +95,7 @@ describe('API Tests: getSchema',function () {
   });
 
   it('Should return json array', function(done){
+    this.timeout(DEFAULT_TIMEOUT);
     request(serverURL)
        .get('/schema')
        .end(function(err, res) {
@@ -116,6 +106,7 @@ describe('API Tests: getSchema',function () {
   });
 
   it('Should return json array with objects having name, requierd and description properties ', function(done){
+    this.timeout(DEFAULT_TIMEOUT);
     request(serverURL)
        .get('/schema')
        .end(function(err, res) {
@@ -124,4 +115,19 @@ describe('API Tests: getSchema',function () {
          done();
        });
   });
+
+  it('Should return json with result field', function(done) {
+    this.timeout(DEFAULT_TIMEOUT);
+    request(serverURL)
+       .post('/calculate')
+       .type('json')
+       .send({weight : 100})
+       .set('Content-Type', 'application/json')
+       .set('Accept', 'application/json')
+       .end(function(err, res) {
+         expect(res.body).to.have.a.property('result');
+         done();
+       });
+  })
+
 });
