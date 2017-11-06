@@ -9,7 +9,13 @@ exports.processInfo = function(req, res) {
   if(!processor.checkForRequired(validParams)){
     res.status(400).json({Error : "No required params were found"});
   }else {
-    res.status(200).json(validParams);
+    var calcResult = processor.calculateWaterAmount(validParams);
+    if(calcResult != NaN){
+      res.status(200).json({result : calcResult});
+    }
+    else {
+      res.status(400).json({Error : "Invalid params value were passed"});
+    }
   }
 };
 

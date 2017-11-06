@@ -1,20 +1,9 @@
 function processor() {}
 
 processor.stats = [
-   {name : 'weight', required : true, description: 'Unsigned Float'},
-   {name : 'age', required : false, description: 'Unsinged Integer'},
-   {name : 'climateZone', required : false, description : 'Integer between [0 .. 2]'},
-   {name : 'sportCondition', required : false, description : 'Integer between [0 .. 2]'}];
-
-processor.uFloatValidation = function(value) {
-  if(typeof value === 'number' && Number.isFinite(value)){
-    if(value >= 0){
-      value.toPrecision(5);
-      return value;
-    }
-  }
-  return NaN;
-}
+   {name : 'weight', required : true, description: 'Weight in KGs : Unsigned Integer'},
+   {name : 'gender', required: false, description: 'Male : 1, Female: 0'},
+   {name : 'sportActivity', required : false, description : 'Hours per day : Unsinged Integer, less than 24'}];
 
 processor.uIntegerValidation = function(value) {
   if(typeof value === 'number' && Number.isFinite(value)){
@@ -48,6 +37,34 @@ processor.checkForRequired = function (params) {
 
 processor.validateParams = function (params) {
   return params;
+}
+
+processor.calculateWaterAmount = function (params) {
+  var genderCoef = 33;
+  var sportCoef = 0;
+
+  if(processor.uIntegerValidation(params.weight) == NaN){
+    return NaN;
+  }
+
+  if (params.gender == 1){
+    //in case of male gender
+    genderCoef += 2;
+  }
+  else if (params.gender == 0){
+    //in case of female gender
+    genderCoef -= 2;
+  }
+
+  if (params.sportActivity !== undefined) {
+    if(processor.uIntegerValidation(params.sportActivity) != NaN){
+      // 0.33 liter per 1 hour of sport activity
+      sportCoef += 0.33 * (params.sportActivity % 24);
+    }
+  }
+
+  var result = (params.weight / genderCoef) + sportCoef;
+  return result.toFixed(1);
 }
 
 module.exports = processor;
