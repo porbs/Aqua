@@ -59,7 +59,7 @@ processor.calculateWaterAmount = function (params) {
   if (params.sportActivity !== undefined) {
     if(processor.uIntegerValidation(params.sportActivity) != NaN){
       // 0.33 liter per 1 hour of sport activity
-      sportCoef += 0.33 * (params.sportActivity % 24);
+      sportCoef += 0.33 * (params.sportActivity % 25);
     }
   }
 
